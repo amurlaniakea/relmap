@@ -13,7 +13,7 @@ relmap-solar = "relmap.solar_cli:main"
 relmap-pdf = "relmap.pdf_cli:main"
 
 [project.optional-dependencies]
-dev = ["pytest", "reportlab", "matplotlib"]
+dev = ["pytest", "reportlab", "matplotlib", "ruff"]
 pdf = ["reportlab", "matplotlib"]
 
 [build-system]
