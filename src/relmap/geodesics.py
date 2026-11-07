@@ -11,7 +11,7 @@ from scipy.integrate import solve_ivp
 
 
 def _rhs(_lam, y, M):
-    t, r, phi, td, rd, phid = y
+    _t, r, _phi, td, rd, phid = y
     f = r - 2.0 * M
     tdd = -2.0 * M / (r * f) * td * rd
     rdd = -M * f / r**3 * td**2 + M / (r * f) * rd**2 + f * phid**2

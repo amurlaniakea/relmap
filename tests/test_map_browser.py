@@ -11,8 +11,16 @@ pytest.importorskip("playwright.sync_api")
 from relmap import default_rays, solar_system_bodies, trace_ray
 from relmap.scene import Scene
 from relmap.scene_map import build_scene_map
-from relmap.solar_system import (AU, BELT_INNER_AU, BELT_OUTER_AU, apsides, asteroid_belt, ephemeris_spec,
-                                 julian_date, orbit_elements, orbit_path, positions)
+from relmap.solar_system import (
+    AU,
+    BELT_INNER_AU,
+    BELT_OUTER_AU,
+    asteroid_belt,
+    ephemeris_spec,
+    julian_date,
+    orbit_path,
+    positions,
+)
 
 NAMES = {"Sol": "sol", "Mercurio": "mercurio", "Venus": "venus", "Tierra": "tierra", "Luna": "luna", "Marte": "marte",
          "Júpiter": "jupiter", "Saturno": "saturno", "Urano": "urano", "Neptuno": "neptuno", "Plutón": "pluton"}
@@ -33,7 +41,7 @@ def page(tmp_path_factory):
     with sync_playwright() as p:
         try:
             b = p.chromium.launch(args=["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"])
-        except Exception as e:                                    # pragma: no cover
+        except (OSError, RuntimeError) as e:                                    # pragma: no cover
             pytest.skip(f"sin Chromium: {e}")
         pg = b.new_page(viewport={"width": 1200, "height": 800})
         errs = []
@@ -46,7 +54,7 @@ def page(tmp_path_factory):
 
 
 def test_sin_errores_de_javascript(page):
-    pg, errs = page
+    _pg, errs = page
     assert errs == []
 
 

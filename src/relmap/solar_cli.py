@@ -4,16 +4,26 @@
 from __future__ import annotations
 
 import argparse
-import sys
 from datetime import datetime, timezone
 
 import numpy as np
 
 from .scene import Scene, load_scene
 from .scene_map import build_scene_map
-from .solar_system import (AU, BELT_INNER_AU, BELT_OUTER_AU, apsides, asteroid_belt, default_rays,
-                           ephemeris_spec, julian_date, orbit_elements, orbit_path, scene_to_dict,
-                           solar_system_bodies)
+from .solar_system import (
+    AU,
+    BELT_INNER_AU,
+    BELT_OUTER_AU,
+    apsides,
+    asteroid_belt,
+    default_rays,
+    ephemeris_spec,
+    julian_date,
+    orbit_elements,
+    orbit_path,
+    scene_to_dict,
+    solar_system_bodies,
+)
 from .uncertainty import monte_carlo
 from .weakfield import time_dilation, trace_ray
 

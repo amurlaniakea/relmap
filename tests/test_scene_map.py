@@ -8,8 +8,17 @@ import pytest
 from relmap import default_rays, solar_system_bodies, trace_ray
 from relmap.scene import Body, Scene
 from relmap.scene_map import SUN_YELLOW, body_colors, build_scene_map, default_views
-from relmap.solar_system import (AU, BELT_INNER_AU, BELT_OUTER_AU, apsides, asteroid_belt, ephemeris_spec,
-                                 julian_date, orbit_elements, orbit_path)
+from relmap.solar_system import (
+    AU,
+    BELT_INNER_AU,
+    BELT_OUTER_AU,
+    apsides,
+    asteroid_belt,
+    ephemeris_spec,
+    julian_date,
+    orbit_elements,
+    orbit_path,
+)
 
 WHEN = datetime(2026, 11, 5, tzinfo=timezone.utc)
 BELT = {"inner_m": BELT_INNER_AU * AU, "outer_m": BELT_OUTER_AU * AU}
@@ -89,7 +98,7 @@ def test_escena_estatica_sin_efemerides_no_se_anima():
 
 # ---- catálogo: Plutón y cinturón ----
 def test_pluton_en_el_catalogo():
-    p = [b for b in solar_system_bodies(WHEN) if b.name == "Plutón"][0]
+    p = next(b for b in solar_system_bodies(WHEN) if b.name == "Plutón")
     assert 30 < np.linalg.norm(p.position) / AU < 50
     assert p.radius == pytest.approx(1188.3e3)
     a, e, q, Q = orbit_elements("Plutón", WHEN)
@@ -106,7 +115,7 @@ def test_cinturon_dentro_de_limites_y_con_huecos():
 
 def test_apsides_coinciden_con_elementos():
     peri, afe = apsides("Marte", WHEN)
-    a, e, q, Q = orbit_elements("Marte", WHEN)
+    _a, _e, q, Q = orbit_elements("Marte", WHEN)
     assert np.linalg.norm(peri) / AU == pytest.approx(q, rel=1e-9)
     assert np.linalg.norm(afe) / AU == pytest.approx(Q, rel=1e-9)
 

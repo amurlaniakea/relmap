@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from relmap import (integrate_null, integrate_timelike, schwarzschild_mass_length)
+from relmap import integrate_null, integrate_timelike, schwarzschild_mass_length
 
 M_SUN = 1.98847e30
 R_SUN = 6.957e8

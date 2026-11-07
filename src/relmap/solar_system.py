@@ -17,7 +17,7 @@ from datetime import datetime, timezone
 
 import numpy as np
 
-from .scene import Body, Ray, Scene, DIST, MASS
+from .scene import DIST, Body, Ray, Scene
 
 AU = DIST["au"]
 KM = 1e3
@@ -139,7 +139,7 @@ def orbit_path(name: str, when: datetime, n: int = 240):
         return None
     el0, rate = _EL[key]
     Tc = (jd - 2451545.0) / 36525.0
-    a, e, I, L, wbar, Om = (el0[i] + rate[i] * Tc for i in range(6))
+    a, e, I, _L, wbar, Om = (el0[i] + rate[i] * Tc for i in range(6))
     omega = np.radians(wbar - Om)
     cO, sO, cI, sI = (np.cos(np.radians(Om)), np.sin(np.radians(Om)),
                       np.cos(np.radians(I)), np.sin(np.radians(I)))
@@ -267,7 +267,7 @@ def apsides(name: str, when: datetime):
         return None
     el0, rate = _EL[key]
     T = (julian_date(when) - 2451545.0) / 36525.0
-    a, e, I, L, wbar, Om = (el0[i] + rate[i] * T for i in range(6))
+    a, e, I, _L, wbar, Om = (el0[i] + rate[i] * T for i in range(6))
     omega = np.radians(wbar - Om)
     cO, sO, cI, sI = (np.cos(np.radians(Om)), np.sin(np.radians(Om)),
                       np.cos(np.radians(I)), np.sin(np.radians(I)))

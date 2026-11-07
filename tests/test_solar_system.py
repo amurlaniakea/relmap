@@ -7,8 +7,16 @@ import pytest
 
 from relmap import parse_scene, scene_to_dict, solar_system_bodies, trace_ray
 from relmap.scene import Scene
-from relmap.solar_system import (AU, default_rays, julian_date, positions, solve_kepler,
-                                 _EL, _helio, _PHYS)
+from relmap.solar_system import (
+    _EL,
+    _PHYS,
+    AU,
+    _helio,
+    default_rays,
+    julian_date,
+    positions,
+    solve_kepler,
+)
 
 UTC = timezone.utc
 
@@ -80,7 +88,7 @@ def test_include_acepta_nombres_sin_tilde():
 
 def test_rasante_sol_deflexion_875():
     bodies = solar_system_bodies(dt("2026-11-05"))
-    ray = [r for r in default_rays(bodies) if "Sol" in r.name][0]
+    ray = next(r for r in default_rays(bodies) if "Sol" in r.name)
     res = trace_ray(bodies, ray.origin, ray.direction, ray.length)
     assert res.deflection_arcsec == pytest.approx(1.7505 / 2, rel=0.03)    # 4M/(2R)
 

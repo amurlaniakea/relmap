@@ -3,8 +3,16 @@
 import numpy as np
 import pytest
 
-from relmap import (Body, integrate_null, load_scene, monte_carlo, parse_scene,
-                    potential, time_dilation, trace_ray)
+from relmap import (
+    Body,
+    integrate_null,
+    load_scene,
+    monte_carlo,
+    parse_scene,
+    potential,
+    time_dilation,
+    trace_ray,
+)
 from relmap.scene import Ray
 
 M_SUN, R_SUN = 1.98847e30, 6.957e8
@@ -15,7 +23,7 @@ def sun():
 
 
 def point(m_geo, pos, name="p"):
-    from relmap.units import G, C
+    from relmap.units import C, G
     return Body(name, m_geo * C**2 / G, np.array(pos, float))
 
 
@@ -72,7 +80,6 @@ def test_impacto_detectado():
 
 def test_montecarlo_propaga_incertidumbre_de_masa():
     b = Body("p", 1.0e30, np.zeros(3), mass_sigma_rel=0.10)
-    from relmap.units import G, C
     ray = Ray("r", np.array([-1e12, 1e9, 0]), np.array([1.0, 0, 0]), 2e12)
     s = monte_carlo([b], ray, n=80, seed=3)
     d = s.deflection_arcsec

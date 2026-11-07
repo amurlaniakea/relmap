@@ -9,7 +9,7 @@ import sys
 from .scene import load_scene
 from .scene_map import build_scene_map
 from .uncertainty import monte_carlo
-from .weakfield import trace_ray, time_dilation
+from .weakfield import time_dilation, trace_ray
 
 
 def main(argv=None) -> int:

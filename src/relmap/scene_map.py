@@ -467,44 +467,44 @@ def build_scene_map(scene, results, exaggerate="auto", out_html=None, title="rel
     }
 
     fig = go.Figure()
-    empty = dict(x=[0.0], y=[0.0], z=[0.0])
+    empty = {"x": [0.0], "y": [0.0], "z": [0.0]}
     fig.add_trace(go.Scatter3d(**empty, mode="lines", meta={"role": "grid"}, showlegend=False,
-                               hoverinfo="skip", line=dict(color=dark["grid"], width=1)))
+                               hoverinfo="skip", line={"color": dark["grid"], "width": 1}))
     for name in orb:
         info = orb[name]["info"]
         fig.add_trace(go.Scatter3d(**empty, mode="lines", meta={"role": "orbit", "key": name}, showlegend=False,
                                    hovertext=f"órbita de {name}" + (f" — {info}" if info else ""), hoverinfo="text",
-                                   line=dict(color=_rgba(colors.get(name, "#94a3b8"), 0.7), width=2)))
+                                   line={"color": _rgba(colors.get(name, "#94a3b8"), 0.7), "width": 2}))
     if belt is not None:
         fig.add_trace(go.Scatter3d(**empty, mode="markers", meta={"role": "belt"}, name="Cinturón de asteroides (ilustrativo)",
-                                   hoverinfo="skip", marker=dict(size=1.6, color=dark["belt"])))
+                                   hoverinfo="skip", marker={"size": 1.6, "color": dark["belt"]}))
     if aps:
         fig.add_trace(go.Scatter3d(**empty, mode="markers", meta={"role": "apsis"}, name="◇ perihelio / afelio",
                                    hovertext=[f"{a['kind']} de {a['name']}" for a in aps], hoverinfo="text",
-                                   marker=dict(size=5, symbol="diamond-open", color=[colors.get(a["name"], "#94a3b8") for a in aps],
-                                               line=dict(color=dark["text"], width=2))))
+                                   marker={"size": 5, "symbol": "diamond-open", "color": [colors.get(a["name"], "#94a3b8") for a in aps],
+                                               "line": {"color": dark["text"], "width": 2}}))
     for b in bodies:
         fig.add_trace(go.Scatter3d(**empty, mode="markers+text", text=[b.name], textposition="top center", name=b.name,
                                    meta={"role": "body", "key": b.name}, hovertext=f"{b.name} — {b.mass_kg:.4g} kg",
-                                   hoverinfo="text", textfont=dict(color=dark["text"], size=12),
-                                   marker=dict(size=sizes[b.name], color=colors[b.name], line=dict(color=dark["outline"], width=1.5))))
+                                   hoverinfo="text", textfont={"color": dark["text"], "size": 12},
+                                   marker={"size": sizes[b.name], "color": colors[b.name], "line": {"color": dark["outline"], "width": 1.5}}))
     for ri, r in enumerate(results):
         fig.add_trace(go.Scatter3d(**empty, mode="lines", meta={"role": "ray", "k": ri}, name=r.name,
-                                   line=dict(color=dark["ray"], width=5), visible=False))
+                                   line={"color": dark["ray"], "width": 5}, visible=False))
 
-    axis = dict(showbackground=False, color=dark["axis"], gridcolor=dark["grid"], zerolinecolor=dark["grid"])
+    axis = {"showbackground": False, "color": dark["axis"], "gridcolor": dark["grid"], "zerolinecolor": dark["grid"]}
     fig.update_layout(
-        title=dict(text=title, x=0.5, font=dict(color=dark["text"])),
-        paper_bgcolor=dark["bg"], plot_bgcolor=dark["bg"], font=dict(color=dark["text"]),
-        margin=dict(l=0, r=0, t=60, b=0),
-        legend=dict(bgcolor="rgba(0,0,0,0)", x=0.99, y=0.93, xanchor="right"),
-        annotations=[dict(text="Malla ilustrativa (profundidad ~ log masa) · curvatura de los rayos exagerada ×K · "
+        title={"text": title, "x": 0.5, "font": {"color": dark["text"]}},
+        paper_bgcolor=dark["bg"], plot_bgcolor=dark["bg"], font={"color": dark["text"]},
+        margin={"l": 0, "r": 0, "t": 60, "b": 0},
+        legend={"bgcolor": "rgba(0,0,0,0)", "x": 0.99, "y": 0.93, "xanchor": "right"},
+        annotations=[{"text": "Malla ilustrativa (profundidad ~ log masa) · curvatura de los rayos exagerada ×K · "
                                "rueda = zoom, arrastrar = girar, menú = cambiar de vista",
-                          x=0.5, y=0.0, xref="paper", yref="paper", showarrow=False,
-                          font=dict(color=dark["axis"], size=11))],
-        scene=dict(bgcolor=dark["bg"], aspectmode="manual", aspectratio=dict(x=1, y=1, z=0.3),
-                   xaxis=dict(title="Δx", **axis), yaxis=dict(title="Δy", **axis),
-                   zaxis=dict(title="profundidad (ilustrativa)", showticklabels=False, **axis)))
+                          "x": 0.5, "y": 0.0, "xref": "paper", "yref": "paper", "showarrow": False,
+                          "font": {"color": dark["axis"], "size": 11}}],
+        scene={"bgcolor": dark["bg"], "aspectmode": "manual", "aspectratio": {"x": 1, "y": 1, "z": 0.3},
+                   "xaxis": dict(title="Δx", **axis), "yaxis": dict(title="Δy", **axis),
+                   "zaxis": dict(title="profundidad (ilustrativa)", showticklabels=False, **axis)})
     if out_html:
         js = (_JS.replace("__CFG__", json.dumps(cfg, allow_nan=False))
                  .replace("__THEMES__", json.dumps(THEMES))

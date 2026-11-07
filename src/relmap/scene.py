@@ -9,7 +9,7 @@ from pathlib import Path
 
 import numpy as np
 
-from .units import G, C
+from .units import C, G
 
 DIST = {"m": 1.0, "km": 1e3, "au": 1.495978707e11, "ly": 9.4607304725808e15,
         "pc": 3.0856775814913673e16, "rsun": 6.957e8}
@@ -91,5 +91,5 @@ def load_scene(path) -> Scene:
         import yaml
         data = yaml.safe_load(text)
     if not isinstance(data, dict):
-        raise ValueError("el archivo de escena debe ser un mapa YAML/JSON")
+        raise TypeError("el archivo de escena debe ser un mapa YAML/JSON")
     return parse_scene(data)

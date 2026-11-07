@@ -21,6 +21,6 @@ def test_datos_del_pdf_coinciden_con_la_fisica():
     D = compute(datetime(2026, 11, 5, tzinfo=timezone.utc), log=lambda m: None)
     assert D.sun_limb["num"] == pytest.approx(D.sun_limb["formula"], rel=0.01)
     assert D.mercury["num"] == pytest.approx(42.98, abs=0.05) and D.mercury["ana"] == pytest.approx(42.98, abs=0.05)
-    assert [r["name"] for r in D.table][0] == "Sol" and len(D.table) == 11
+    assert next(r["name"] for r in D.table) == "Sol" and len(D.table) == 11
     for r in D.table:                                   # el «aporte» propio coincide con 4GM/(bc²)
         assert r["own"] == pytest.approx(r["formula"], rel=0.03)

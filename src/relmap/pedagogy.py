@@ -18,12 +18,21 @@ import numpy as np
 
 from . import __version__
 from .geodesics import integrate_null, integrate_timelike
-from .scene import Scene
-from .solar_system import (AU, BELT_INNER_AU, BELT_OUTER_AU, _EL, _PHYS, default_rays, julian_date,
-                           orbit_elements, orbit_path, solar_system_bodies, solve_kepler)
-from .units import C, G, schwarzschild_mass_length
+from .solar_system import (
+    _EL,
+    AU,
+    BELT_INNER_AU,
+    BELT_OUTER_AU,
+    default_rays,
+    julian_date,
+    orbit_elements,
+    orbit_path,
+    solar_system_bodies,
+    solve_kepler,
+)
 from .uncertainty import monte_carlo
-from .weakfield import potential, time_dilation, trace_ray
+from .units import C, schwarzschild_mass_length
+from .weakfield import time_dilation, trace_ray
 
 ARCSEC = 180.0 / np.pi * 3600.0
 M_SUN, R_SUN = 1.98847e30, 6.957e8
@@ -88,9 +97,10 @@ def compute(when: datetime, log=print) -> Data:
     dilation = [(x.name, 1 - time_dilation(x.position + [x.radius, 0, 0], [x])) for x in bodies if x.radius > 0]
 
     log("· incertidumbre (Monte Carlo)…")
-    sun_b = [bd for bd in bodies if bd.name == "Sol"]
+    [bd for bd in bodies if bd.name == "Sol"]
     mc = {}
     from dataclasses import replace
+
     from .scene import Ray
     sb = [replace(_sun_body(), mass_sigma_rel=0.01)]
     ray = Ray("r", np.array([-2e3 * R_SUN, 1.5 * R_SUN, 0.0]), np.array([1.0, 0, 0]), 4e3 * R_SUN)
@@ -109,7 +119,7 @@ def compute(when: datetime, log=print) -> Data:
     log("· ecuación de Kepler y elipses…")
     el0, rate = _EL["marte"]
     T = (julian_date(when) - 2451545.0) / 36525.0
-    a_, e_, I_, L_, wb_, Om_ = (el0[i] + rate[i] * T for i in range(6))
+    a_, e_, _, L_, wb_, __ = (el0[i] + rate[i] * T for i in range(6))
     Mdeg = (L_ - wb_ + 180.0) % 360.0 - 180.0
     estar, Eit = np.degrees(e_), []
     E = Mdeg + estar * np.sin(np.radians(Mdeg))
@@ -180,7 +190,7 @@ def fig_flow():
         ax.add_patch(plt.Rectangle((x, 0.2), 1.38, 1.6, fc=c, ec="#334155", lw=1.2, zorder=2))
         ax.text(x + 0.69, 1.0, s, ha="center", va="center", fontsize=8.2, zorder=3)
         if i < len(steps) - 1:
-            ax.annotate("", xy=(x + 1.62, 1.0), xytext=(x + 1.38, 1.0), arrowprops=dict(arrowstyle="->", lw=1.6, color="#334155"))
+            ax.annotate("", xy=(x + 1.62, 1.0), xytext=(x + 1.38, 1.0), arrowprops={"arrowstyle": "->", "lw": 1.6, "color": "#334155"})
     ax.text(4.86, -0.15, "Monte Carlo: repetir con masas/posiciones perturbadas → incertidumbre", ha="center", fontsize=8, style="italic")
     ax.set_xlim(-0.1, 9.9)
     ax.set_ylim(-0.4, 2.0)
@@ -196,7 +206,7 @@ def fig_lensing():
     ax.plot([-3.2, -0.0], [1.0, 1.0], color="#0f172a", lw=2)
     ax.plot([0.0, 3.2], [1.0, 1.0 + 3.2 * np.tan(np.radians(9))], color="#0f172a", lw=2)
     ax.plot([0.0, 3.2], [1.0, 1.0], color="#64748b", lw=1.2, ls="--")
-    ax.annotate("", xy=(0, 0.45), xytext=(0, 1.0), arrowprops=dict(arrowstyle="<->", lw=1.2, color="#b91c1c"))
+    ax.annotate("", xy=(0, 0.45), xytext=(0, 1.0), arrowprops={"arrowstyle": "<->", "lw": 1.2, "color": "#b91c1c"})
     ax.text(0.12, 0.7, "b", color="#b91c1c", fontsize=11)
     ax.text(2.0, 1.55, r"$\alpha \approx 4GM/(c^2 b)$", fontsize=11, color="#0f172a")
     ax.text(-2.4, 1.2, "rayo de luz", fontsize=9)
@@ -263,7 +273,7 @@ def fig_orbits(when):
         for n in names:
             p = orbit_path(n, when) / AU
             ax.plot(p[:, 0], p[:, 1], color=cols[n], lw=1.6, label=n)
-            q, Q = orbit_elements(n, when)[2:]
+            _q, _Q = orbit_elements(n, when)[2:]
         ax.plot(0, 0, "o", color="#FFD60A", mec="#92400e", ms=9, zorder=5)
         ax.set_xlim(-lim, lim)
         ax.set_ylim(-lim, lim)
@@ -287,8 +297,8 @@ def fig_ellipse():
     ax.plot(-2 * a * e, 0, "x", color="#64748b")
     ax.plot(-a * e, 0, ".", color="#64748b")
     ax.annotate("Sol (foco)", (0, 0), (0.05, 0.25), fontsize=8)
-    ax.annotate("perihelio q = a(1−e)", (a * (1 - e), 0), (0.45, -0.55), fontsize=8, arrowprops=dict(arrowstyle="->"))
-    ax.annotate("afelio Q = a(1+e)", (-a * (1 + e), 0), (-1.55, 0.45), fontsize=8, arrowprops=dict(arrowstyle="->"))
+    ax.annotate("perihelio q = a(1−e)", (a * (1 - e), 0), (0.45, -0.55), fontsize=8, arrowprops={"arrowstyle": "->"})
+    ax.annotate("afelio Q = a(1+e)", (-a * (1 + e), 0), (-1.55, 0.45), fontsize=8, arrowprops={"arrowstyle": "->"})
     ax.text(-a * e - 0.02, -0.12, "centro", fontsize=7, color="#64748b", ha="center")
     ax.set_aspect("equal")
     ax.set_title("elipse con e = 0,6 (exagerada)", fontsize=9)
@@ -320,6 +330,8 @@ def _fmt(x, d=4):
 
 
 def build_pdf(path, nivel="profesor", when=None, log=print):
+    import matplotlib
+    from PIL import Image as PILImage
     from reportlab.lib import colors
     from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
     from reportlab.lib.pagesizes import A4
@@ -327,10 +339,18 @@ def build_pdf(path, nivel="profesor", when=None, log=print):
     from reportlab.lib.units import cm
     from reportlab.pdfbase import pdfmetrics
     from reportlab.pdfbase.ttfonts import TTFont
-    from reportlab.platypus import (Image, KeepTogether, PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table,
-                                    TableStyle, ListFlowable, ListItem)
-    import matplotlib
-    from PIL import Image as PILImage
+    from reportlab.platypus import (
+        Image,
+        KeepTogether,
+        ListFlowable,
+        ListItem,
+        PageBreak,
+        Paragraph,
+        SimpleDocTemplate,
+        Spacer,
+        Table,
+        TableStyle,
+    )
 
     prof = nivel == "profesor"
     when = when or datetime.now(timezone.utc)
@@ -451,8 +471,8 @@ def build_pdf(path, nivel="profesor", when=None, log=print):
       "un agujero negro tendría M/r ≈ 1/2. Por eso la aproximación de campo débil es excelente en el Sistema Solar.")
     if prof:
         BOX("Nota para el profesor", [
-            "Restituir unidades: una longitud en metros se convierte en tiempo dividiendo por c; una masa geométrica en kg se obtiene multiplicando por c²/G. "
-            "Un error típico del alumnado es olvidar que, con G = c = 1, «masa», «longitud» y «tiempo» comparten unidad."])
+            ("Restituir unidades: una longitud en metros se convierte en tiempo dividiendo por c; una masa geométrica en kg se obtiene multiplicando por c²/G. "
+            "Un error típico del alumnado es olvidar que, con G = c = 1, «masa», «longitud» y «tiempo» comparten unidad.")])
 
     # ---------------------------------------------------------------- 3
     H1("3. Un cuerpo: la solución exacta de Schwarzschild")
@@ -487,8 +507,8 @@ def build_pdf(path, nivel="profesor", when=None, log=print):
     EQ(r"z(r)=2\sqrt{2M\,(r-2M)}\qquad (r\geq 2M)", 14, "8")
     FIG(fig_flamm(), 13.5, "Figura 3. Diagrama de incrustación de Flamm. En relmap esta idea inspira la «malla deformada» del mapa.")
     BOX("Importante (honestidad científica)", [
-        "En el mapa del Sistema Solar la <b>profundidad de los pozos es ilustrativa</b> (proporcional al logaritmo de la masa): si se dibujara a escala real, los planetas serían invisibles junto al Sol. "
-        "Los números físicos se leen en las tablas, no en la profundidad."], fill="#fff7ed", edge="#c2410c")
+        ("En el mapa del Sistema Solar la <b>profundidad de los pozos es ilustrativa</b> (proporcional al logaritmo de la masa): si se dibujara a escala real, los planetas serían invisibles junto al Sol. "
+        "Los números físicos se leen en las tablas, no en la profundidad.")], fill="#fff7ed", edge="#c2410c")
 
     # ---------------------------------------------------------------- 4
     H1("4. Varios cuerpos: campo débil")
@@ -508,11 +528,11 @@ def build_pdf(path, nivel="profesor", when=None, log=print):
       f"Ejemplo: de 1 UA a 1 UA rozando el Sol, {D.answers['shapiro_km']:.1f} km, es decir {D.answers['shapiro_km']*1e3/C*1e6:.0f} µs.")
     if prof:
         BOX("Derivación breve (profesor)", [
-            "De la geodésica nula ds² = 0 en (9): (1+2Φ)c²dt² = (1−2Φ)dl², luego la velocidad coordenada es c/n con n ≈ 1−2Φ. "
+            ("De la geodésica nula ds² = 0 en (9): (1+2Φ)c²dt² = (1−2Φ)dl², luego la velocidad coordenada es c/n con n ≈ 1−2Φ. "
             "El principio de Fermat (tiempo mínimo, ∫n dl estacionario) da la ecuación de rayo (10). "
             "Con n = 1 + 2M/r y un rayo recto a distancia b, la desviación es α = ∫|∇⊥n| ds = ∫ 2Mb/(b²+x²)^{3/2} dx = 4M/b. "
             "La mitad procede de la curvatura temporal (g₀₀) y la otra mitad de la espacial (g_ij): "
-            "de ahí el factor 2 respecto al cálculo newtoniano (2M/b)."])
+            "de ahí el factor 2 respecto al cálculo newtoniano (2M/b).")])
     H2("4.3 Qué pasa si el rayo choca con un cuerpo")
     P("El programa define sucesos de parada: si el rayo entra en el radio de un cuerpo, la integración se detiene y se marca «IMPACTA». "
       "Esto evita resultados sin sentido físico (la luz no atraviesa planetas).")
@@ -524,8 +544,8 @@ def build_pdf(path, nivel="profesor", when=None, log=print):
       "Un paso adaptativo hace pasos pequeños donde la solución cambia rápido (cerca de una masa) y grandes donde es suave.")
     BUL(["<b>Eventos</b>: detectan impactos y capturas por el horizonte.",
          "<b>Salida densa</b>: permite muestrear el camino con tantos puntos como se quiera sin recalcular.",
-         "<b>Verificación</b>: las predicciones se contrastan con fórmulas analíticas conocidas (deflexión, Shapiro, precesión, simetría, superposición). "
-         "El repositorio incluye una batería de pruebas automáticas que lo comprueba."])
+         ("<b>Verificación</b>: las predicciones se contrastan con fórmulas analíticas conocidas (deflexión, Shapiro, precesión, simetría, superposición). "
+         "El repositorio incluye una batería de pruebas automáticas que lo comprueba.")])
     H2("5.1 Por qué el mapa exagera la curvatura de los rayos")
     P("Las desviaciones de la luz son de microradianes (o menos): dibujadas a escala serían rectas indistinguibles. En el mapa, la curvatura del rayo se <b>exagera</b> por un factor K que se escribe en la leyenda. "
       "Para no amplificar errores numéricos, el tramo visible se reconstruye integrando las <i>direcciones</i> (que se calculan con gran precisión) y no las posiciones.")
@@ -565,12 +585,12 @@ def build_pdf(path, nivel="profesor", when=None, log=print):
     FIG(fig_orbits(when), 16.0, "Figura 4. Órbitas elípticas reales a la fecha elegida (vista cenital). A la izquierda, el sistema interior y el cinturón de asteroides; a la derecha, el exterior con Plutón.")
     FIG(fig_ellipse(), 8.4, "Figura 5. Geometría de la elipse: el Sol ocupa un foco, no el centro.")
     H2("7.3 La Luna, Plutón y el cinturón de asteroides")
-    BUL(["<b>Tierra y Luna.</b> Los elementos dan la posición del baricentro Tierra-Luna; la Tierra se desplaza de él ≈ 4 670 km hacia el lado opuesto a la Luna. "
-         "La Luna se modela como órbita circular de 384 400 km con inclinación de 5,145° (error de decenas de miles de km).",
+    BUL([("<b>Tierra y Luna.</b> Los elementos dan la posición del baricentro Tierra-Luna; la Tierra se desplaza de él ≈ 4 670 km hacia el lado opuesto a la Luna. "
+         "La Luna se modela como órbita circular de 384 400 km con inclinación de 5,145° (error de decenas de miles de km)."),
          "<b>Plutón.</b> JPL retiró a Plutón de su tabla de elementos tras 2006; se usan los valores de la tabla original de Standish, reproducidos en bibliotecas abiertas (pykep, satkit). Masa y radio: JPL (planeta enano).",
-         f"<b>Cinturón de asteroides.</b> Se marca entre {BELT_INNER_AU:g} y {BELT_OUTER_AU:g} UA, entre Marte y Júpiter. Es una nube <i>ilustrativa</i> (con los huecos de Kirkwood, que son resonancias con Júpiter), no asteroides reales. "
+         (f"<b>Cinturón de asteroides.</b> Se marca entre {BELT_INNER_AU:g} y {BELT_OUTER_AU:g} UA, entre Marte y Júpiter. Es una nube <i>ilustrativa</i> (con los huecos de Kirkwood, que son resonancias con Júpiter), no asteroides reales. "
          "Es la frontera habitual entre el sistema solar <b>interior</b> (planetas rocosos) y el <b>exterior</b> (gigantes y objetos transneptunianos). "
-         "La masa total del cinturón es menos de una milésima de la de la Tierra (≈ 4 % de la masa lunar), de modo que no afecta a los cálculos de lente."])
+         "La masa total del cinturón es menos de una milésima de la de la Tierra (≈ 4 % de la masa lunar), de modo que no afecta a los cálculos de lente.")])
     TAB([["Cuerpo", "Error nominal de posición (JPL, 1800-2050)"],
          ["Mercurio / Venus / Tierra", "≈ 1 000 / 4 000 / 6 000 km"], ["Marte", "≈ 25 000 km"], ["Júpiter / Saturno", "≈ 600 000 / 1 500 000 km"],
          ["Urano / Neptuno", "≈ 1 000 000 / 200 000 km"], ["Plutón", "no publicado; usamos 30 000 000 km (estimación gruesa)"], ["Luna", "decenas de miles de km (modelo simple)"]],
@@ -595,7 +615,7 @@ def build_pdf(path, nivel="profesor", when=None, log=print):
         ("¿Cuántos microsegundos al día atrasa un reloj en el ecuador terrestre respecto a uno muy lejano? (Usa dτ/dt ≈ 1 + Φ.)", f"≈ {D.answers['dil_us']:.0f} µs al día."),
         ("Resuelve la ecuación de Kepler E − e·sin E = M para M = 1 rad y e = 0,1, con dos iteraciones de Newton partiendo de E₀ = M.", f"E ≈ {np.radians(D.answers['kepler_E']):.5f} rad (converge en 2-3 pasos)."),
         ("Explica sin fórmulas por qué la órbita de la Tierra «parece» circular aunque sea una elipse.", "Su excentricidad es 0,0167: el eje menor es solo un 0,014 % menor que el mayor; lo único notable es el desplazamiento del Sol del centro (foco)."),
-        (f"¿Puede Plutón estar más cerca del Sol que Neptuno? Compara q de Plutón con a de Neptuno.", f"Sí: q(Plutón) ≈ {D.answers['pluto_q']:.1f} UA < a(Neptuno) ≈ {D.answers['nep_a']:.1f} UA (no chocan porque sus órbitas están inclinadas y en resonancia 3:2)."),
+        ("¿Puede Plutón estar más cerca del Sol que Neptuno? Compara q de Plutón con a de Neptuno.", f"Sí: q(Plutón) ≈ {D.answers['pluto_q']:.1f} UA < a(Neptuno) ≈ {D.answers['nep_a']:.1f} UA (no chocan porque sus órbitas están inclinadas y en resonancia 3:2)."),
         ("¿Por qué el programa exagera los rayos en el mapa pero no en las tablas?", "Porque el mapa es visual (ángulos de 10⁻⁶ rad serían invisibles) y las tablas son los números reales. El factor K se indica siempre."),
         ("Si la posición de un planeta tiene un error de 600 000 km, ¿puedes predecir su efecto de lente sobre un rayo que pasa a 140 000 km de su centro?", "No: el error de posición es mayor que el parámetro de impacto; el efecto se pierde en el ruido (ver sección 6)."),
     ]
@@ -613,8 +633,8 @@ def build_pdf(path, nivel="profesor", when=None, log=print):
         BUL(["«La gravedad es una fuerza». En relatividad general los objetos libres siguen geodésicas; la «fuerza» es geometría.",
              "Confundir la <b>malla ilustrativa</b> con la curvatura real: la profundidad dibujada no es a escala.",
              "Creer que la luz «tiene masa» y por eso se curva: se curva porque el espacio-tiempo es curvo.",
-             "Pensar que el cinturón de asteroides es un planeta destruido: la masa total es mucho menor que la de la Luna y su composición es muy diversa. "
-             "(La hipótesis de Olbers de un planeta «Faetón» es histórica y está descartada.)",
+             ("Pensar que el cinturón de asteroides es un planeta destruido: la masa total es mucho menor que la de la Luna y su composición es muy diversa. "
+             "(La hipótesis de Olbers de un planeta «Faetón» es histórica y está descartada.)"),
              "Olvidar que el resultado depende de la <b>incertidumbre en la posición</b>, no solo de la masa."])
         H2("Ampliaciones")
         BUL(["Relatividad numérica (formalismo 3+1) para campos fuertes: <i>no</i> está en relmap.",
