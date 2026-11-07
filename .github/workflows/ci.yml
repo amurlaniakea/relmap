@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run ruff
+        run: ruff check .
+
+      - name: Run compileall
+        run: python -m compileall -q src tests
+
+      - name: Run pytest
+        run: pytest -v
+
+      - name: Verify LICENSE
+        run: |
+          test $(wc -l < LICENSE) -eq 661
+          grep -q "GNU AFFERO GENERAL PUBLIC LICENSE" LICENSE
+          test $(grep -c "any later" LICENSE) -ge 1
+
+      - name: Verify SPDX headers in Python files
+        run: |
+          for f in $(find src tests -name "*.py"); do
+            head -5 "$f" | grep -q "SPDX-License-Identifier: AGPL-3.0-or-later" || { echo "Missing SPDX header in $f"; exit 1; }
+          done

@@ -1,0 +1,26 @@
+# Escena de ejemplo (distancias en UA). Datos "estimados": cada cuerpo lleva incertidumbre.
+unit: au
+bodies:
+  - name: Sol
+    mass: 1.0
+    mass_unit: msun
+    position: [0, 0, 0]
+    radius: 0.0046505          # 1 radio solar
+    mass_sigma_rel: 0.01
+    position_sigma: 0.0
+  - name: Júpiter
+    mass: 1.0
+    mass_unit: mjup
+    position: [2.0, -4.8, 0]
+    radius: 0.000478           # ~71 492 km
+    mass_sigma_rel: 0.02
+    position_sigma: 0.00002        # ~3000 km (con 0.05 UA el efecto de lente se pierde: ver README)
+rays:
+  - name: luz rozando el Sol
+    origin: [-5, 0.0047, 0]
+    direction: [1, 0, 0]
+    length: 10
+  - name: luz rozando Júpiter
+    origin: [-1, -4.7994, 0]
+    direction: [1, 0, 0]
+    length: 6
