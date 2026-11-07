@@ -228,3 +228,5 @@ examples/           escenas de ejemplo
 Datos orbitales y físicos: NASA/JPL. Plutón: tabla original de Standish. Motor numérico: SciPy; gráficos: Plotly;
 PDF: ReportLab y Matplotlib. Código bajo **AGPL-3.0-or-later**; añade el texto oficial en `LICENSE` al publicar
 el repositorio.
+
+**Autor:** Pedro Sordo Martínez — amurlaniakea@gmail.com
